@@ -1,0 +1,61 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "mine-excavators:diamond_excavator",
+      "required": false
+    },
+    {
+      "id": "mine-excavators:emerald_excavator",
+      "required": false
+    },
+    {
+      "id": "mine-excavators:ender_excavator",
+      "required": false
+    },
+    {
+      "id": "mine-excavators:magma_excavator",
+      "required": false
+    },
+    {
+      "id": "mine-excavators:golden_excavator",
+      "required": false
+    },
+    {
+      "id": "mine-excavators:iron_excavator",
+      "required": false
+    },
+    {
+      "id": "mine-excavators:lapis_excavator",
+      "required": false
+    },
+    {
+      "id": "mine-excavators:netherite_excavator",
+      "required": false
+    },
+    {
+      "id": "mine-excavators:obsidian_excavator",
+      "required": false
+    },
+    {
+      "id": "mine-excavators:prismarine_excavator",
+      "required": false
+    },
+    {
+      "id": "mine-excavators:quartz_excavator",
+      "required": false
+    },
+    {
+      "id": "mine-excavators:slime_excavator",
+      "required": false
+    },
+    {
+      "id": "mine-excavators:stone_excavator",
+      "required": false
+    },
+    {
+      "id": "mine-excavators:wooden_excavator",
+      "required": false
+    }
+  ]
+}

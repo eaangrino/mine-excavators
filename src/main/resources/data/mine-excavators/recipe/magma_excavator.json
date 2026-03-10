@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    " d ",
+    "DsD",
+    " s "
+  ],
+  "key": {
+    "D": {
+      "item": "minecraft:magma_block"
+    },
+    "d": {
+      "item": "minecraft:magma_cream"
+    },
+    "s": {
+      "item": "minecraft:obsidian"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "mine-excavators:magma_excavator"
+  }
+}

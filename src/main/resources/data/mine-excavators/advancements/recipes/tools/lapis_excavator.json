@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_ingredient": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": ["minecraft:lapis_lazuli"]
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "mine-excavators:lapis_excavator"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_ingredient"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "mine-excavators:lapis_excavator"
+    ]
+  }
+}

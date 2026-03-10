@@ -1,0 +1,6 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "mine-excavators:item/obsidian_excavator"
+  }
+}

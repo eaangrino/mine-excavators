@@ -1,0 +1,16 @@
+{
+  "item.mine-excavators.wooden_excavator": "Wooden Excavator",
+  "item.mine-excavators.stone_excavator": "Stone Excavator",
+  "item.mine-excavators.iron_excavator": "Iron Excavator",
+  "item.mine-excavators.golden_excavator": "Golden Excavator",
+  "item.mine-excavators.diamond_excavator": "Diamond Excavator",
+  "item.mine-excavators.netherite_excavator": "Netherite Excavator",
+  "item.mine-excavators.obsidian_excavator": "Obsidian Excavator",
+  "item.mine-excavators.emerald_excavator": "Emerald Excavator",
+  "item.mine-excavators.lapis_excavator": "Lapis Excavator",
+  "item.mine-excavators.quartz_excavator": "Quartz Excavator",
+  "item.mine-excavators.prismarine_excavator": "Prismarine Excavator",
+  "item.mine-excavators.slime_excavator": "Slime Excavator",
+  "item.mine-excavators.magma_excavator": "Magma Excavator",
+  "item.mine-excavators.ender_excavator": "Ender Excavator"
+}
