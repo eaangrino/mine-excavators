@@ -1,0 +1,36 @@
+{
+  "parent": "mine-excavators:excavators/root",
+  "display": {
+    "icon": {
+      "count": 1,
+      "id": "mine-excavators:slime_excavator"
+    },
+    "title": {
+      "translate": "mine-excavators.advancements.slime_excavator.title"
+    },
+    "description": {
+      "translate": "mine-excavators.advancements.slime_excavator.description"
+    },
+    "frame": "challenge",
+    "hidden": true
+  },
+  "criteria": {
+    "slime_excavator": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "mine-excavators:slime_excavator"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "slime_excavator"
+    ]
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "display": {
+    "icon": {
+      "count": 1,
+      "id": "mine-excavators:wooden_excavator"
+    },
+    "title": {
+      "translate": "mine-excavators.advancements.root.title"
+    },
+    "description": {
+      "translate": "mine-excavators.advancements.root.description"
+    },
+    "background": "minecraft:textures/gui/advancements/backgrounds/adventure.png"
+  },
+  "criteria": {
+    "wooden_shovel": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:wooden_shovel"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "wooden_shovel"
+    ]
+  ]
+}

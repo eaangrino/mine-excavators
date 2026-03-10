@@ -1,0 +1,34 @@
+{
+  "parent": "mine-excavators:excavators/diamond_excavator",
+  "display": {
+    "icon": {
+      "count": 1,
+      "id": "mine-excavators:obsidian_excavator"
+    },
+    "title": {
+      "translate": "mine-excavators.advancements.obsidian_excavator.title"
+    },
+    "description": {
+      "translate": "mine-excavators.advancements.obsidian_excavator.description"
+    }
+  },
+  "criteria": {
+    "obsidian_excavator": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "mine-excavators:obsidian_excavator"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "obsidian_excavator"
+    ]
+  ]
+}

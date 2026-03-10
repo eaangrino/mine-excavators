@@ -1,0 +1,34 @@
+{
+  "parent": "mine-excavators:excavators/stone_excavator",
+  "display": {
+    "icon": {
+      "count": 1,
+      "id": "mine-excavators:lapis_excavator"
+    },
+    "title": {
+      "translate": "mine-excavators.advancements.lapis_excavator.title"
+    },
+    "description": {
+      "translate": "mine-excavators.advancements.lapis_excavator.description"
+    }
+  },
+  "criteria": {
+    "lapis_excavator": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "mine-excavators:lapis_excavator"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "lapis_excavator"
+    ]
+  ]
+}

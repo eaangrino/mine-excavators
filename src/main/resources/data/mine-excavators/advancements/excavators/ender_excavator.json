@@ -1,0 +1,35 @@
+{
+  "parent": "mine-excavators:excavators/emerald_excavator",
+  "display": {
+    "icon": {
+      "count": 1,
+      "id": "mine-excavators:ender_excavator"
+    },
+    "title": {
+      "translate": "mine-excavators.advancements.ender_excavator.title"
+    },
+    "description": {
+      "translate": "mine-excavators.advancements.ender_excavator.description"
+    },
+    "frame": "challenge"
+  },
+  "criteria": {
+    "ender_excavator": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "mine-excavators:ender_excavator"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "ender_excavator"
+    ]
+  ]
+}

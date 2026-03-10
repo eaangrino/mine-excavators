@@ -1,0 +1,34 @@
+{
+  "parent": "mine-excavators:excavators/iron_excavator",
+  "display": {
+    "icon": {
+      "count": 1,
+      "id": "mine-excavators:golden_excavator"
+    },
+    "title": {
+      "translate": "mine-excavators.advancements.golden_excavator.title"
+    },
+    "description": {
+      "translate": "mine-excavators.advancements.golden_excavator.description"
+    }
+  },
+  "criteria": {
+    "golden_excavator": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "mine-excavators:golden_excavator"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "golden_excavator"
+    ]
+  ]
+}

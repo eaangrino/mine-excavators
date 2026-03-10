@@ -1,0 +1,35 @@
+{
+  "parent": "mine-excavators:excavators/iron_excavator",
+  "display": {
+    "icon": {
+      "count": 1,
+      "id": "mine-excavators:diamond_excavator"
+    },
+    "title": {
+      "translate": "mine-excavators.advancements.diamond_excavator.title"
+    },
+    "description": {
+      "translate": "mine-excavators.advancements.diamond_excavator.description"
+    },
+    "frame": "goal"
+  },
+  "criteria": {
+    "diamond_excavator": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "mine-excavators:diamond_excavator"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "diamond_excavator"
+    ]
+  ]
+}

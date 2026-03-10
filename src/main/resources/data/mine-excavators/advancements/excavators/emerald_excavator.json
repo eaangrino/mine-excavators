@@ -1,0 +1,35 @@
+{
+  "parent": "mine-excavators:excavators/iron_excavator",
+  "display": {
+    "icon": {
+      "count": 1,
+      "id": "mine-excavators:emerald_excavator"
+    },
+    "title": {
+      "translate": "mine-excavators.advancements.emerald_excavator.title"
+    },
+    "description": {
+      "translate": "mine-excavators.advancements.emerald_excavator.description"
+    },
+    "frame": "goal"
+  },
+  "criteria": {
+    "emerald_excavator": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "mine-excavators:emerald_excavator"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "emerald_excavator"
+    ]
+  ]
+}
