@@ -5,8 +5,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -15,8 +18,17 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
+import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 public class ExcavatorItem extends DiggerItem {
 	private static final ThreadLocal<Boolean> AREA_MINING_ACTIVE = ThreadLocal.withInitial(() -> false);
@@ -43,12 +55,23 @@ public class ExcavatorItem extends DiggerItem {
 			return mined;
 		}
 
+		boolean shouldSmelt = smeltsBlocks();
+		Map<Item, Integer> inventoryBefore = shouldSmelt ? snapshotInventoryCounts(player.getInventory()) : Map.of();
+
 		MineExcavatorsConfig.ConfigData config = MineExcavatorsConfig.get();
 		if (!config.areaMiningEnabled || config.radius <= 0) {
+			if (shouldSmelt) {
+				smeltNearbyDrops(level, pos, 1.5D);
+				smeltNewlyCollectedInventoryItems(player, level, inventoryBefore);
+			}
 			return mined;
 		}
 
 		if (config.disableWhenSneaking && player.isShiftKeyDown()) {
+			if (shouldSmelt) {
+				smeltNearbyDrops(level, pos, 1.5D);
+				smeltNewlyCollectedInventoryItems(player, level, inventoryBefore);
+			}
 			return mined;
 		}
 
@@ -58,6 +81,11 @@ public class ExcavatorItem extends DiggerItem {
 			breakArea(stack, player, level, pos, axis, config);
 		} finally {
 			AREA_MINING_ACTIVE.set(false);
+		}
+
+		if (shouldSmelt) {
+			smeltDropsInMinedArea(level, pos, axis, config.radius);
+			smeltNewlyCollectedInventoryItems(player, level, inventoryBefore);
 		}
 
 		return mined;
@@ -109,8 +137,159 @@ public class ExcavatorItem extends DiggerItem {
 			return;
 		}
 
-		if (player.gameMode.destroyBlock(targetPos) && !player.getAbilities().instabuild) {
-			player.causeFoodExhaustion(config.hungerExhaustionPerExtraBlock);
+		if (player.gameMode.destroyBlock(targetPos)) {
+			if (!player.getAbilities().instabuild) {
+				player.causeFoodExhaustion(config.hungerExhaustionPerExtraBlock);
+			}
+		}
+	}
+
+	private static void smeltDropsInMinedArea(Level level, BlockPos origin, Direction.Axis axis, int radius) {
+		int minX = origin.getX();
+		int maxX = origin.getX();
+		int minY = origin.getY();
+		int maxY = origin.getY();
+		int minZ = origin.getZ();
+		int maxZ = origin.getZ();
+
+		switch (axis) {
+			case X -> {
+				minY -= radius;
+				maxY += radius;
+				minZ -= radius;
+				maxZ += radius;
+			}
+			case Y -> {
+				minX -= radius;
+				maxX += radius;
+				minZ -= radius;
+				maxZ += radius;
+			}
+			case Z -> {
+				minX -= radius;
+				maxX += radius;
+				minY -= radius;
+				maxY += radius;
+			}
+		}
+
+		AABB searchArea = new AABB(minX, minY, minZ, maxX + 1.0D, maxY + 1.0D, maxZ + 1.0D).inflate(1.5D);
+		smeltDropsInBox(level, searchArea);
+	}
+
+	private static void smeltNearbyDrops(Level level, BlockPos blockPos, double inflation) {
+		smeltDropsInBox(level, new AABB(blockPos).inflate(inflation));
+	}
+
+	private static void smeltDropsInBox(Level level, AABB searchArea) {
+		smeltDropsInBox(level, searchArea, true);
+	}
+
+	private static void smeltDropsInBox(Level level, AABB searchArea, boolean scheduleFollowUpPass) {
+		if (!(level instanceof ServerLevel serverLevel)) {
+			return;
+		}
+
+		for (ItemEntity itemEntity : serverLevel.getEntitiesOfClass(ItemEntity.class, searchArea, entity -> entity.isAlive() && !entity.getItem().isEmpty())) {
+			ItemStack smelted = smeltStack(serverLevel, itemEntity.getItem());
+			if (!smelted.isEmpty()) {
+				itemEntity.setItem(smelted);
+			}
+		}
+
+		// Some drops can spawn just after block break processing; a second pass next tick catches late entities.
+		if (scheduleFollowUpPass) {
+			serverLevel.getServer().execute(() -> smeltDropsInBox(serverLevel, searchArea, false));
+		}
+	}
+
+	private static ItemStack smeltStack(ServerLevel level, ItemStack input) {
+		SingleRecipeInput recipeInput = new SingleRecipeInput(input);
+		Optional<RecipeHolder<SmeltingRecipe>> optionalRecipe = level.getRecipeManager().getRecipeFor(RecipeType.SMELTING, recipeInput, level);
+		if (optionalRecipe.isEmpty()) {
+			return ItemStack.EMPTY;
+		}
+
+		ItemStack result = optionalRecipe.get().value().getResultItem(level.registryAccess()).copy();
+		if (result.isEmpty()) {
+			return ItemStack.EMPTY;
+		}
+
+		result.setCount(result.getCount() * input.getCount());
+		return result;
+	}
+
+	private static Map<Item, Integer> snapshotInventoryCounts(Inventory inventory) {
+		Map<Item, Integer> counts = new HashMap<>();
+		for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
+			ItemStack stack = inventory.getItem(slot);
+			if (!stack.isEmpty()) {
+				counts.merge(stack.getItem(), stack.getCount(), Integer::sum);
+			}
+		}
+		return counts;
+	}
+
+	private static void smeltNewlyCollectedInventoryItems(ServerPlayer player, Level level, Map<Item, Integer> beforeCounts) {
+		if (!(level instanceof ServerLevel serverLevel) || beforeCounts.isEmpty()) {
+			return;
+		}
+
+		Inventory inventory = player.getInventory();
+		Map<Item, Integer> afterCounts = snapshotInventoryCounts(inventory);
+		for (Map.Entry<Item, Integer> entry : afterCounts.entrySet()) {
+			int gainedCount = entry.getValue() - beforeCounts.getOrDefault(entry.getKey(), 0);
+			if (gainedCount <= 0) {
+				continue;
+			}
+
+			int removedCount = removeItemsFromInventory(inventory, entry.getKey(), gainedCount);
+			if (removedCount <= 0) {
+				continue;
+			}
+
+			ItemStack smelted = smeltStack(serverLevel, new ItemStack(entry.getKey(), removedCount));
+			if (smelted.isEmpty()) {
+				addOrDrop(player, new ItemStack(entry.getKey(), removedCount));
+				continue;
+			}
+
+			addOrDrop(player, smelted);
+		}
+	}
+
+	private static int removeItemsFromInventory(Inventory inventory, Item item, int countToRemove) {
+		int removed = 0;
+		for (int slot = 0; slot < inventory.getContainerSize() && removed < countToRemove; slot++) {
+			ItemStack stack = inventory.getItem(slot);
+			if (stack.isEmpty() || stack.getItem() != item) {
+				continue;
+			}
+
+			int amount = Math.min(countToRemove - removed, stack.getCount());
+			stack.shrink(amount);
+			removed += amount;
+
+			if (stack.isEmpty()) {
+				inventory.setItem(slot, ItemStack.EMPTY);
+			}
+		}
+		return removed;
+	}
+
+	private static void addOrDrop(ServerPlayer player, ItemStack stack) {
+		if (stack.isEmpty()) {
+			return;
+		}
+
+		Inventory inventory = player.getInventory();
+		if (!inventory.add(stack) && !stack.isEmpty()) {
+			player.drop(stack, false);
+			return;
+		}
+
+		if (!stack.isEmpty()) {
+			player.drop(stack, false);
 		}
 	}
 
