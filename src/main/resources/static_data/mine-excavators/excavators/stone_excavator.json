@@ -1,7 +1,7 @@
 {
   "id": "stone",
   "miningLevel": 1,
-  "durability": 131,
+  "durability": 393,
   "blockBreakSpeed": 1.15,
   "attackDamage": 4,
   "attackSpeed": -2.6,

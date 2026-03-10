@@ -1,7 +1,7 @@
 {
   "id": "slime",
   "miningLevel": 2,
-  "durability": 1500,
+  "durability": 4500,
   "blockBreakSpeed": 1.7,
   "attackDamage": 7,
   "attackSpeed": -3,

@@ -1,7 +1,7 @@
 {
   "id": "obsidian",
   "miningLevel": 2,
-  "durability": 2048,
+  "durability": 6144,
   "blockBreakSpeed": 1.4,
   "attackDamage": 7,
   "attackSpeed": -3.5,

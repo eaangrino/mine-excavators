@@ -1,7 +1,7 @@
 {
   "id": "lapis",
   "miningLevel": 1,
-  "durability": 220,
+  "durability": 660,
   "blockBreakSpeed": 1.7,
   "attackDamage": 5,
   "attackSpeed": -2,
