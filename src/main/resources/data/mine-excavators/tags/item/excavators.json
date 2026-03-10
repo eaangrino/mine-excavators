@@ -1,0 +1,19 @@
+{
+  "replace": false,
+  "values": [
+    "mine-excavators:diamond_excavator",
+    "mine-excavators:emerald_excavator",
+    "mine-excavators:ender_excavator",
+    "mine-excavators:magma_excavator",
+    "mine-excavators:golden_excavator",
+    "mine-excavators:iron_excavator",
+    "mine-excavators:lapis_excavator",
+    "mine-excavators:netherite_excavator",
+    "mine-excavators:obsidian_excavator",
+    "mine-excavators:prismarine_excavator",
+    "mine-excavators:quartz_excavator",
+    "mine-excavators:slime_excavator",
+    "mine-excavators:stone_excavator",
+    "mine-excavators:wooden_excavator"
+  ]
+}
