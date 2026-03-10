@@ -109,7 +109,9 @@ public class ExcavatorItem extends DiggerItem {
 			return;
 		}
 
-		player.gameMode.destroyBlock(targetPos);
+		if (player.gameMode.destroyBlock(targetPos) && !player.getAbilities().instabuild) {
+			player.causeFoodExhaustion(config.hungerExhaustionPerExtraBlock);
+		}
 	}
 
 	private static ItemAttributeModifiers createExcavatorAttributes(Tier material, float attackDamage, float attackSpeed, float extraKnockback) {

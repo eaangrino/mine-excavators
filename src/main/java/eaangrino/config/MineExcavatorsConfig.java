@@ -52,12 +52,14 @@ public final class MineExcavatorsConfig {
 
 		int radius = Math.max(0, Math.min(4, loaded.radius));
 		boolean onlyShovelMineable = loaded.onlyShovelMineable || loaded.onlyPickaxeMineable;
+		float hungerExhaustionPerExtraBlock = Math.max(0.0F, Math.min(1.0F, loaded.hungerExhaustionPerExtraBlock));
 		return new ConfigData(
 				loaded.areaMiningEnabled,
 				radius,
 				loaded.disableWhenSneaking,
 				onlyShovelMineable,
-				loaded.requireCorrectToolForDrops
+				loaded.requireCorrectToolForDrops,
+				hungerExhaustionPerExtraBlock
 		);
 	}
 
@@ -79,18 +81,27 @@ public final class MineExcavatorsConfig {
 		public boolean onlyShovelMineable;
 		public boolean onlyPickaxeMineable; // legacy key kept for migration compatibility
 		public boolean requireCorrectToolForDrops;
+		public float hungerExhaustionPerExtraBlock;
 
 		public ConfigData() {
-			this(true, 1, true, true, true);
+			this(true, 1, true, true, true, 0.0125F);
 		}
 
-		public ConfigData(boolean areaMiningEnabled, int radius, boolean disableWhenSneaking, boolean onlyShovelMineable, boolean requireCorrectToolForDrops) {
+		public ConfigData(
+				boolean areaMiningEnabled,
+				int radius,
+				boolean disableWhenSneaking,
+				boolean onlyShovelMineable,
+				boolean requireCorrectToolForDrops,
+				float hungerExhaustionPerExtraBlock
+		) {
 			this.areaMiningEnabled = areaMiningEnabled;
 			this.radius = radius;
 			this.disableWhenSneaking = disableWhenSneaking;
 			this.onlyShovelMineable = onlyShovelMineable;
 			this.onlyPickaxeMineable = false;
 			this.requireCorrectToolForDrops = requireCorrectToolForDrops;
+			this.hungerExhaustionPerExtraBlock = hungerExhaustionPerExtraBlock;
 		}
 
 		public static ConfigData defaults() {
