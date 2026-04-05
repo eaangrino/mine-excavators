@@ -13,6 +13,8 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.DiggerItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -29,9 +31,12 @@ import net.minecraft.world.phys.AABB;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ExcavatorItem extends DiggerItem {
 	private static final ThreadLocal<Boolean> AREA_MINING_ACTIVE = ThreadLocal.withInitial(() -> false);
+	private static final Map<UUID, Direction> LAST_MINED_FACES = new ConcurrentHashMap<>();
 	private final boolean smelts;
 
 	public ExcavatorItem(Tier material, float attackDamage, float attackSpeed, float extraKnockback, boolean smelts, Item.Properties properties) {
@@ -45,6 +50,10 @@ public class ExcavatorItem extends DiggerItem {
 
 	public boolean smeltsBlocks() {
 		return smelts;
+	}
+
+	public static float getModifiedDestroySpeed(ItemStack stack, Level level, LivingEntity entity, BlockState state, float currentSpeed) {
+		return applyExcavatorHasteBoost(entity, currentSpeed);
 	}
 
 	@Override
@@ -75,7 +84,7 @@ public class ExcavatorItem extends DiggerItem {
 			return mined;
 		}
 
-		Direction.Axis axis = getMiningPlaneAxis(player);
+		Direction.Axis axis = getMiningPlaneAxis(player, pos);
 		AREA_MINING_ACTIVE.set(true);
 		try {
 			breakArea(stack, player, level, pos, axis, config);
@@ -91,13 +100,39 @@ public class ExcavatorItem extends DiggerItem {
 		return mined;
 	}
 
-	private static Direction.Axis getMiningPlaneAxis(ServerPlayer player) {
+	public static void rememberLastMinedFace(ServerPlayer player, Direction face) {
+		LAST_MINED_FACES.put(player.getUUID(), face);
+	}
+
+	private static Direction.Axis getMiningPlaneAxis(ServerPlayer player, BlockPos origin) {
+		Direction hitFace = LAST_MINED_FACES.remove(player.getUUID());
+		if (hitFace != null) {
+			return hitFace.getAxis();
+		}
+
+		// Fallback for edge cases where no attack callback ran before the block finished breaking.
 		// Looking mostly up/down mines a horizontal 3x3, otherwise mines a vertical 3x3 in front of the player.
 		if (Math.abs(player.getXRot()) > 45.0F) {
 			return Direction.Axis.Y;
 		}
 
 		return player.getDirection().getAxis();
+	}
+
+	private static float applyExcavatorHasteBoost(LivingEntity entity, float currentSpeed) {
+		if (currentSpeed <= 1.0F) {
+			return currentSpeed;
+		}
+
+		MobEffectInstance haste = entity.getEffect(MobEffects.DIG_SPEED);
+		if (haste == null) {
+			return currentSpeed;
+		}
+
+		// Excavators are intentionally slower than vanilla shovels, so Haste can feel underwhelming.
+		// Give excavators a modest extra scaling per Haste level to keep the effect noticeable in play.
+		float excavatorHasteMultiplier = 1.0F + 0.35F * (haste.getAmplifier() + 1);
+		return currentSpeed * excavatorHasteMultiplier;
 	}
 
 	private static void breakArea(ItemStack stack, ServerPlayer player, Level level, BlockPos origin, Direction.Axis axis, MineExcavatorsConfig.ConfigData config) {

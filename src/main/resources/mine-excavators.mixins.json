@@ -3,7 +3,8 @@
 	"package": "eaangrino.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
-		"ExampleMixin"
+		"ExampleMixin",
+		"PlayerMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

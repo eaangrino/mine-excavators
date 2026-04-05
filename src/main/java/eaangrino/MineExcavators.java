@@ -6,6 +6,7 @@ import eaangrino.config.MineExcavatorsConfig;
 import eaangrino.item.ExcavatorItem;
 import eaangrino.item.material.ExcavatorMaterial;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.fabricmc.loader.api.FabricLoader;
@@ -16,6 +17,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -47,9 +49,19 @@ public class MineExcavators implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		MineExcavatorsConfig.load();
+		registerBlockAttackTracking();
 		registerExcavatorsFromStaticData();
 		registerCreativeTabEntries();
 		LOGGER.info("Registered {} excavators for {}", EXCAVATORS.size(), MOD_ID);
+	}
+
+	private static void registerBlockAttackTracking() {
+		AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> {
+			if (!world.isClientSide() && player instanceof net.minecraft.server.level.ServerPlayer serverPlayer && player.getItemInHand(hand).getItem() instanceof ExcavatorItem) {
+				ExcavatorItem.rememberLastMinedFace(serverPlayer, direction);
+			}
+			return InteractionResult.PASS;
+		});
 	}
 
 	private static void registerExcavatorsFromStaticData() {
